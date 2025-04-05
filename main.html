@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Password Hacker</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      user-select: none;
+    }
+
+    .container {
+      background-color: #1e2a38;
+      padding: 2rem 3rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: #00ffff;
+    }
+
+    input[type="text"] {
+      padding: 12px;
+      width: 100%;
+      margin-bottom: 1rem;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2e3d4f;
+      color: #fff;
+      outline: none;
+    }
+
+    button {
+      background-color: #00ffff;
+      color: #1e2a38;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00bebe;
+    }
+
+    .output {
+      margin-top: 2rem;
+      font-size: 18px;
+      white-space: pre-wrap;
+    }
+
+    .success {
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    .shown-password {
+      font-size: 16px;
+      color: #ccc;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Password Hacker</h1>
+    <input type="text" id="realPassword" placeholder="Enter your password to be hacked" />
+    <button onclick="startHacking()">Start Hacking</button>
+    <div class="output" id="output">Ready to hack your password...</div>
+  </div>
+
+  <script>
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{},.<>?/\\|`~'\"";
+    let password = "";
+    let hackedPassword = "";
+    let currentIndex = 0;
+    const output = document.getElementById("output");
+
+    function getRandomChar() {
+      return charset[Math.floor(Math.random() * charset.length)];
+    }
+
+    function guessChar(targetChar, callback) {
+      let guess = "";
+      const interval = setInterval(() => {
+        guess = getRandomChar();
+        output.innerText = `🔍 Cracking character ${currentIndex + 1}...\n\n🧠 Current Guess: ${hackedPassword + guess}`;
+
+        if (guess === targetChar) {
+          clearInterval(interval);
+          hackedPassword += guess;
+          currentIndex++;
+          callback();
+        }
+      }, 50); // speed per character guess
+    }
+
+    function hackNextChar() {
+      if (currentIndex >= password.length) {
+        output.innerHTML = `✅ <span class="success">Password cracked successfully!</span>\n\n🔓 <strong>${hackedPassword}</strong>`;
+        return;
+      }
+      guessChar(password[currentIndex], hackNextChar);
+    }
+
+    function startHacking() {
+      hackedPassword = "";
+      currentIndex = 0;
+      password = document.getElementById("realPassword").value;
+
+      if (!password) {
+        output.innerText = "⚠️ Please enter a password first!";
+        return;
+      }
+
+      output.innerHTML = `<div class="shown-password">Entered Password: <strong>${password}</strong></div>\nStarting hack...\n`;
+      setTimeout(hackNextChar, 1000);
+    }
+  </script>
+</body>
+</html>
